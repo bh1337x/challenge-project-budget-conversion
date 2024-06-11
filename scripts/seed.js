@@ -20,40 +20,54 @@ const createTableSql = `
 `
 let data = ''
 
-db.query(createTableSql, err => {
-  if (err) return console.error('Error creating table:', err)
-  stream.on('data', chunk => {
-    data += chunk.toString()
+function seed (cb, closeDatabase = true) {
+  db.executeQuery(createTableSql, [], err => {
+    if (err) return console.error('Error creating table:', err)
+    stream.on('data', chunk => {
+      data += chunk.toString()
 
-    const lines = data.split('\n')
-    data = lines.pop()
+      const lines = data.split('\n')
+      data = lines.pop()
 
-    lines.forEach((line, index) => {
-      if (index === 0) return
+      lines.forEach((line, index) => {
+        if (index === 0) return
 
-      const values = line.split(',')
-      const parsedValues = values.map(value => {
-        if (value === 'NULL') return null
-        if (!isNaN(value)) return parseFloat(value)
-        return `"${value}"`
-      })
+        const values = line.split(',')
+        const parsedValues = values.map(value => {
+          if (value === 'NULL') return null
+          if (!isNaN(value)) return parseFloat(value)
+          return `"${value}"`
+        })
 
-      const insertSql = `INSERT INTO project values (${parsedValues.join(',')})`
+        const insertSql = `INSERT INTO project values (${parsedValues.join(',')})`
 
-      db.query(insertSql, err => {
-        if (err) {
-          console.error('Error inserting Project ID:', values[0], err)
-          process.exit(1)
-        }
-        console.log('Inserted Project ID:', values[0])
+        db.executeQuery(insertSql, [], err => {
+          if (err) {
+            console.error('Error inserting Project ID:', values[0], err)
+            process.exit(1)
+          }
+        })
       })
     })
-  })
 
-  stream.on('end', () => {
-    db.end(err => {
-      if (err) return console.error('Error closing database connection:', err)
-      console.log('Database connection closed')
+    stream.on('end', () => {
+      if (closeDatabase) {
+        db.end(err => {
+          if (err) return console.error('Error closing database connection:', err)
+          console.log('Database connection closed')
+          cb()
+        })
+      } else {
+        cb()
+      }
     })
   })
-})
+}
+
+if (require.main === module) {
+  seed(() => {
+    console.log('Seeding complete')
+  })
+}
+
+module.exports = seed
