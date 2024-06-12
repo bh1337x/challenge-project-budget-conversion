@@ -40,6 +40,27 @@ test('GET /nonexistent should return 404', function (t) {
   })
 })
 
+test('GET /api/project/budget/currency should return 400 on invalid body',
+  function (t) {
+    const req = servertest(server, '/api/project/budget/currency', {
+      method: 'POST',
+      encoding: 'json',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }, function (err, res) {
+      t.error(err, 'No error')
+      t.equal(res.statusCode, 400, 'Should return 400')
+      t.false(res.body.success, 'Should return a body')
+      t.ok(res.body.error, 'Should return an error')
+      t.end()
+    })
+
+    req.write(JSON.stringify({}))
+    req.end()
+  }
+)
+
 test('POST /api/project/budget/currency should return success', function (t) {
   const req = servertest(server, '/api/project/budget/currency', {
     method: 'POST',
