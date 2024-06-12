@@ -56,7 +56,7 @@ function seed (cb, closeDatabase = true) {
 
     stream.on('end', () => {
       if (closeDatabase) {
-        return db.end(err => {
+        return db.close(err => {
           if (err) return console.error('Error closing database connection:', err)
           console.log('Database connection closed')
           cb()
