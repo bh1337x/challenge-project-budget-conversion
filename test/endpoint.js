@@ -354,6 +354,54 @@ test('PUT /api/project/budget/:id should return success on valid body',
   }
 )
 
+test('DELETE /api/project/budget/:id should return 400 on invalid project id',
+  function (t) {
+    servertest(
+      server,
+      '/api/project/budget/invalid',
+      { method: 'DELETE', encoding: 'json' },
+      function (err, res) {
+        t.error(err, 'No error')
+        t.equal(res.statusCode, 400, 'Should return 400')
+        t.false(res.body.success, 'Should have success as false')
+        t.end()
+      }
+    )
+  }
+)
+
+test('DELETE /api/project/budget/:id should return 404 on nonexistent project id',
+  function (t) {
+    servertest(
+      server,
+      '/api/project/budget/999',
+      { method: 'DELETE', encoding: 'json' },
+      function (err, res) {
+        t.error(err, 'No error')
+        t.equal(res.statusCode, 404, 'Should return 404')
+        t.false(res.body.success, 'Should have success as false')
+        t.end()
+      }
+    )
+  }
+)
+
+test('DELETE /api/project/budget/:id should return success on valid project id',
+  function (t) {
+    servertest(
+      server,
+      '/api/project/budget/1337',
+      { method: 'DELETE', encoding: 'json' },
+      function (err, res) {
+        t.error(err, 'No error')
+        t.equal(res.statusCode, 200, 'Should return 200')
+        t.true(res.body.success, 'Should have success as true')
+        t.end()
+      }
+    )
+  }
+)
+
 test('TEARDOWN', function (t) {
   server.close(function () {
     db.close(function () {
