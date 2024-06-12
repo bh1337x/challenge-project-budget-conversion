@@ -52,14 +52,14 @@ function seed (cb, closeDatabase = true) {
 
     stream.on('end', () => {
       if (closeDatabase) {
-        db.end(err => {
+        return db.end(err => {
           if (err) return console.error('Error closing database connection:', err)
           console.log('Database connection closed')
           cb()
         })
-      } else {
-        cb()
       }
+
+      cb()
     })
   })
 }
