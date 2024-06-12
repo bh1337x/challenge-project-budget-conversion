@@ -106,6 +106,123 @@ test('GET /api/project/budget/:id should return 200 on valid id',
   }
 )
 
+test('POST /api/project/budget should return 400 on empty body',
+  function (t) {
+    const req = servertest(server, '/api/project/budget', {
+      method: 'POST',
+      encoding: 'json',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }, function (err, res) {
+      t.error(err, 'No error')
+      t.equal(res.statusCode, 400, 'Should return 400')
+      t.false(res.body.success, 'Should return a body')
+      t.ok(res.body.error, 'Should return an error')
+      t.end()
+    })
+
+    req.write(JSON.stringify({}))
+    req.end()
+  }
+)
+
+test('POST /api/project/budget should return 400 on invalid & missing fields',
+  function (t) {
+    const req = servertest(server, '/api/project/budget', {
+      method: 'POST',
+      encoding: 'json',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }, function (err, res) {
+      t.error(err, 'No error')
+      t.equal(res.statusCode, 400, 'Should return 400')
+      t.false(res.body.success, 'Should return a body')
+      t.ok(res.body.error, 'Should return an error')
+      t.end()
+    })
+
+    req.write(JSON.stringify({
+      projectId: 'invalid',
+      projectName: 'Humitas Hewlett Packard',
+      year: 2024,
+      currency: 'Ttd',
+      budgetUsd: 100000
+    }))
+    req.end()
+  }
+)
+
+test('POST /api/project/budget should return error on existing project id',
+  function (t) {
+    const req = servertest(server, '/api/project/budget', {
+      method: 'POST',
+      encoding: 'json',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }, function (err, res) {
+      t.error(err, 'No error')
+      t.equal(res.statusCode, 400, 'Should return 400')
+      t.false(res.body.success, 'Should return a body')
+      t.equal(
+        res.body.error,
+        'Budget with this project ID already exists',
+        'Should return an error'
+      )
+      t.end()
+    })
+
+    req.write(JSON.stringify({
+      projectId: 1,
+      projectName: 'Humitas Hewlett Packard',
+      year: 2024,
+      currency: 'TTD',
+      initialBudgetLocal: 100000,
+      budgetUsd: 100000,
+      initialScheduleEstimateMonths: 12,
+      adjustedScheduleEstimateMonths: 12,
+      contingencyRate: 0.1,
+      escalationRate: 0.1,
+      finalBudgetUsd: 100000
+    }))
+    req.end()
+  }
+)
+
+test('POST /api/project/budget should return success on valid body',
+  function (t) {
+    const req = servertest(server, '/api/project/budget', {
+      method: 'POST',
+      encoding: 'json',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }, function (err, res) {
+      t.error(err, 'No error')
+      t.equal(res.statusCode, 201, 'Should return 201')
+      t.true(res.body.success, 'Should return success')
+      t.end()
+    })
+
+    req.write(JSON.stringify({
+      projectId: 1337,
+      projectName: 'Bakhteyar Haider',
+      year: 2024,
+      currency: 'USD',
+      initialBudgetLocal: 100000,
+      budgetUsd: 100000,
+      initialScheduleEstimateMonths: 12,
+      adjustedScheduleEstimateMonths: 12,
+      contingencyRate: 0.1,
+      escalationRate: 0.1,
+      finalBudgetUsd: 100000
+    }))
+    req.end()
+  }
+)
+
 test('TEARDOWN', function (t) {
   server.close(function () {
     db.close(function () {
