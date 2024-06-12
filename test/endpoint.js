@@ -51,7 +51,7 @@ test('GET /api/project/budget/currency should return 400 on invalid body',
     }, function (err, res) {
       t.error(err, 'No error')
       t.equal(res.statusCode, 400, 'Should return 400')
-      t.false(res.body.success, 'Should return a body')
+      t.false(res.body.success, 'Should have success as false')
       t.ok(res.body.error, 'Should return an error')
       t.end()
     })
@@ -71,7 +71,7 @@ test('POST /api/project/budget/currency should return success', function (t) {
   }, function (err, res) {
     t.error(err, 'No error')
     t.equal(res.statusCode, 200, 'Should return 200')
-    t.ok(res.body.success, 'Should return success')
+    t.true(res.body.success, 'Should have success as true')
     t.end()
   })
 
@@ -138,7 +138,7 @@ test('POST /api/project/budget should return 400 on empty body',
     }, function (err, res) {
       t.error(err, 'No error')
       t.equal(res.statusCode, 400, 'Should return 400')
-      t.false(res.body.success, 'Should return a body')
+      t.false(res.body.success, 'Should have success as false')
       t.ok(res.body.error, 'Should return an error')
       t.end()
     })
@@ -159,7 +159,7 @@ test('POST /api/project/budget should return 400 on invalid & missing fields',
     }, function (err, res) {
       t.error(err, 'No error')
       t.equal(res.statusCode, 400, 'Should return 400')
-      t.false(res.body.success, 'Should return a body')
+      t.false(res.body.success, 'Should have success as false')
       t.ok(res.body.error, 'Should return an error')
       t.end()
     })
@@ -175,7 +175,7 @@ test('POST /api/project/budget should return 400 on invalid & missing fields',
   }
 )
 
-test('POST /api/project/budget should return error on existing project id',
+test('POST /api/project/budget should return 400 on existing project id',
   function (t) {
     const req = servertest(server, '/api/project/budget', {
       method: 'POST',
@@ -186,11 +186,11 @@ test('POST /api/project/budget should return error on existing project id',
     }, function (err, res) {
       t.error(err, 'No error')
       t.equal(res.statusCode, 400, 'Should return 400')
-      t.false(res.body.success, 'Should return a body')
+      t.false(res.body.success, 'Should have success as false')
       t.equal(
         res.body.error,
         'Budget with this project ID already exists',
-        'Should return an error'
+        'Should return an error message'
       )
       t.end()
     })
@@ -223,7 +223,7 @@ test('POST /api/project/budget should return success on valid body',
     }, function (err, res) {
       t.error(err, 'No error')
       t.equal(res.statusCode, 201, 'Should return 201')
-      t.true(res.body.success, 'Should return success')
+      t.true(res.body.success, 'Should have success as true')
       t.end()
     })
 
