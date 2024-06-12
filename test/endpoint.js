@@ -60,3 +60,47 @@ test('POST /api/project/budget/currency should return success', function (t) {
   }))
   req.end()
 })
+
+test('GET /api/project/budget/:id should return 400 on invalid id',
+  function (t) {
+    servertest(
+      server,
+      '/api/project/budget/invalid',
+      function (err, res) {
+        t.error(err, 'No error')
+        t.equal(res.statusCode, 400, 'Should return 400')
+        t.end()
+      }
+    )
+  }
+)
+
+test('GET /api/project/budget/:id should return 404 on nonexistent id',
+  function (t) {
+    servertest(
+      server,
+      '/api/project/budget/999',
+      function (err, res) {
+        t.error(err, 'No error')
+        t.equal(res.statusCode, 404, 'Should return 404')
+        t.end()
+      }
+    )
+  }
+)
+
+test('GET /api/project/budget/:id should return 200 on valid id',
+  function (t) {
+    servertest(
+      server,
+      '/api/project/budget/1',
+      { encoding: 'json' },
+      function (err, res) {
+        t.error(err, 'No error')
+        t.equal(res.statusCode, 200, 'Should return 200')
+        t.equal(res.body.projectId, 1, 'Should return project')
+        t.end()
+      }
+    )
+  }
+)
