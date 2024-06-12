@@ -4,6 +4,7 @@ const http = require('http')
 const test = require('tape')
 const servertest = require('servertest')
 const app = require('../lib/app')
+const db = require('../lib/db')
 const seed = require('../scripts/seed')
 
 const server = http.createServer(app)
@@ -104,3 +105,11 @@ test('GET /api/project/budget/:id should return 200 on valid id',
     )
   }
 )
+
+test('TEARDOWN', function (t) {
+  server.close(function () {
+    db.close(function () {
+      t.end()
+    })
+  })
+})
