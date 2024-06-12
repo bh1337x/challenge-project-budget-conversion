@@ -4,8 +4,15 @@ const http = require('http')
 const test = require('tape')
 const servertest = require('servertest')
 const app = require('../lib/app')
+const seed = require('../scripts/seed')
 
 const server = http.createServer(app)
+
+test('SETUP', function (t) {
+  seed(function () {
+    t.end()
+  }, false)
+})
 
 test('GET /health should return 200', function (t) {
   servertest(server, '/health', { encoding: 'json' }, function (err, res) {
