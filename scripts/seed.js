@@ -45,8 +45,10 @@ function seed (cb, closeDatabase = true) {
 
         db.executeQuery(insertSql, [], err => {
           if (err) {
-            console.error('Error inserting Project ID:', values[0], err)
-            process.exit(1)
+            stream.close(() => {
+              console.error('Error inserting Project ID:', values[0], err)
+              process.exit(1)
+            })
           }
         })
       })
