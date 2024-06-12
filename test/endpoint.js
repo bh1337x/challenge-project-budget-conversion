@@ -38,3 +38,25 @@ test('GET /nonexistent should return 404', function (t) {
     t.end()
   })
 })
+
+test('POST /api/project/budget/currency should return success', function (t) {
+  const req = servertest(server, '/api/project/budget/currency', {
+    method: 'POST',
+    encoding: 'json',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }, function (err, res) {
+    t.error(err, 'No error')
+    t.equal(res.statusCode, 200, 'Should return 200')
+    t.ok(res.body.success, 'Should return success')
+    t.end()
+  })
+
+  req.write(JSON.stringify({
+    year: 2024,
+    projectName: 'Humitas Hewlett Packard',
+    currency: 'TTD'
+  }))
+  req.end()
+})
