@@ -402,6 +402,51 @@ test('DELETE /api/project/budget/:id should return success on valid project id',
   }
 )
 
+test('POST /api-conversion should return error on invalid body', function (t) {
+  const req = servertest(server, '/api-conversion', {
+    method: 'POST',
+    encoding: 'json',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }, function (err, res) {
+    t.error(err, 'No error')
+    t.equal(res.statusCode, 400, 'Should return 400')
+    t.false(res.body.success, 'Should have success as false')
+    t.ok(res.body.error, 'Should return an error')
+    t.end()
+  })
+
+  req.write(JSON.stringify([]))
+  req.end()
+})
+
+test('POST /api-conversion should return success on valid body', function (t) {
+  const req = servertest(server, '/api-conversion', {
+    method: 'POST',
+    encoding: 'json',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }, function (err, res) {
+    t.error(err, 'No error')
+    t.equal(res.statusCode, 200, 'Should return 200')
+    t.true(res.body.success, 'Should have success as true')
+    t.equal(Object.keys(res.body.data).length, 4, 'Should return 4 items')
+    t.end()
+  })
+
+  req.write(JSON.stringify({
+    projectNames: [
+      'Peking roasted duck Chanel',
+      'Choucroute Cartier',
+      'Rigua Nintendo',
+      'Llapingacho Instagram'
+    ]
+  }))
+  req.end()
+})
+
 test('TEARDOWN', function (t) {
   server.close(function () {
     db.close(function () {
