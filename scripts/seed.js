@@ -1,6 +1,8 @@
 const fs = require('fs')
 const db = require('../lib/db')
 
+module.exports = seed
+
 const stream = fs.createReadStream('./data/projects.csv')
 
 const createTableSql = `
@@ -69,5 +71,3 @@ if (require.main === module) {
     console.log('Seeding complete')
   })
 }
-
-module.exports = seed
