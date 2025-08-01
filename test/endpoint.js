@@ -4,8 +4,14 @@ const http = require('http')
 const test = require('tape')
 const servertest = require('servertest')
 const app = require('../lib/app')
+const db = require('../lib/db')
+const seed = require('../scripts/seed')
 
 const server = http.createServer(app)
+
+test('SETUP', function (t) {
+  seed(t.end)
+})
 
 test('GET /health should return 200', function (t) {
   servertest(server, '/health', { encoding: 'json' }, function (err, res) {
@@ -30,4 +36,8 @@ test('GET /nonexistent should return 404', function (t) {
     t.equal(res.statusCode, 404, 'Should return 404')
     t.end()
   })
+})
+
+test('TEARDOWN', function (t) {
+  db.close(t.end)
 })
